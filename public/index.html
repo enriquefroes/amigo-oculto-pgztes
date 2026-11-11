@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Amigo Oculto Pgzetes</title>
+<meta name="description" content="Amigo oculto de camisas de futebol dos Pgzetes: ficha, vetos e sorteio secreto.">
+<meta name="theme-color" content="#0E5A39">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pgzetes">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app de celular — barra de topo com o placar, conteúdo em uma coluna, abas fixas embaixo */
+:root{
+  --bg:#EDF1EC; --surface:#FFFFFF; --surface-2:#F4F7F4; --ink:#14221B; --muted:#56675D; --line:#D2DBD4;
+  --pitch:#0E5A39; --pitch-2:#0B4A2F; --chalk:rgba(255,255,255,.5); --on-pitch:#F4FAF6;
+  --gold:#B87A05; --gold-ink:#1A1405; --red:#D3263C; --red-soft:#FCE6E9; --on-red:#FFFFFF;
+  --ok:#1E7B4C; --warn:#9A6100; --warn-soft:#FFF3D9; --shadow:0 1px 2px rgba(20,34,27,.08);
+  --display:"Big Shoulders Display","Arial Narrow","Roboto Condensed",Impact,sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,-apple-system,sans-serif;
+  --r:12px; --tabbar:64px; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0C1511; --surface:#14211A; --surface-2:#1A2A21; --ink:#E7EFEA; --muted:#97AA9E; --line:#28392F;
+  --pitch:#0F4D32; --pitch-2:#0A3A25; --chalk:rgba(255,255,255,.3);
+  --gold:#F2B83A; --red:#F04A5E; --red-soft:#3A1419;
+  --ok:#4CC88A; --warn:#F2B83A; --warn-soft:#33270F; --shadow:none; color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;overscroll-behavior-y:contain}
+[hidden]{display:none!important}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* topo */
+.top{background:repeating-linear-gradient(90deg,var(--pitch) 0 48px,var(--pitch-2) 48px 96px);color:var(--on-pitch);padding-top:env(safe-area-inset-top,0px);position:sticky;top:0;z-index:5}
+.top .wrap{padding-block:10px 12px;display:flex;flex-direction:column;gap:8px}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-family:var(--display);font-weight:900;font-size:26px;line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.brand span{color:var(--gold)}
+.icon-btn{background:rgba(0,0,0,.22);border:1px solid var(--chalk);color:var(--on-pitch);border-radius:10px;min-height:40px;min-width:40px;padding:0 12px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn.spin svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:rgba(0,0,0,.24);border:1px solid var(--chalk);border-radius:999px;padding:3px 10px;font-size:13px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.chip b{font-weight:700}
+
+/* tela de acesso */
+.hero{background:repeating-linear-gradient(90deg,var(--pitch) 0 56px,var(--pitch-2) 56px 112px);color:var(--on-pitch);padding-top:env(safe-area-inset-top,0px);position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;width:240px;height:240px;border:2px solid var(--chalk);border-radius:50%;right:-110px;top:50%;transform:translateY(-50%)}
+.hero .wrap{position:relative;padding-block:36px 28px}
+.hero .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.85}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(46px,14vw,72px);line-height:.88;margin:8px 0 0;text-transform:uppercase}
+.hero h1 span{color:var(--gold);display:block}
+
+main{padding-block:16px calc(var(--tabbar) + 28px + env(safe-area-inset-bottom,0px))}
+main.noTabs{padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+.view{display:flex;flex-direction:column;gap:16px}
+h2{font-family:var(--display);font-weight:800;font-size:26px;text-transform:uppercase;margin:0;line-height:1}
+h3{font-size:15px;margin:0;font-weight:700}
+.sub{color:var(--muted);font-size:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.notice{border-radius:var(--r);padding:12px 14px;font-size:15px;background:var(--warn-soft);border-left:4px solid var(--warn)}
+.notice.info{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--pitch)}
+
+/* botões */
+.btn{border:2px solid transparent;border-radius:12px;min-height:50px;padding:0 18px;font-weight:700;font-size:16px;background:var(--pitch);color:var(--on-pitch);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.block{width:100%}
+.btn-gold{background:var(--gold);color:var(--gold-ink)}
+.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-red{background:var(--red);color:var(--on-red)}
+.btn-sm{min-height:40px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.55;cursor:default}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > .btn{flex:1 1 140px}
+
+/* formulários */
+form{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field > span{font-weight:600;font-size:14px}
+.field small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=password],textarea{font-size:16px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-height:50px;width:100%}
+textarea{min-height:84px;resize:vertical}
+.pw{position:relative}
+.pw input{padding-right:64px}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:var(--muted);font-size:13px;font-weight:700;min-height:40px;padding:0 8px}
+.err{color:var(--red);font-size:14px;font-weight:600}
+.err:empty{display:none}
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;min-height:44px;border:0;border-radius:9px;background:transparent;font-weight:700;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--pitch);color:var(--on-pitch)}
+.sizes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sizes button{min-height:52px;border:2px solid var(--line);border-radius:10px;background:var(--surface-2);font-family:var(--display);font-weight:800;font-size:20px}
+.sizes button.wide{grid-column:span 2;font-size:18px}
+.sizes button[aria-pressed="true"]{background:var(--pitch);border-color:var(--pitch);color:var(--on-pitch)}
+
+/* vetos */
+.veto-box{background:var(--red-soft);border:1px dashed var(--red);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.veto-box .lbl{font-size:13px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.08em}
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.pick button{min-height:40px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px;font-weight:600}
+.pick button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:var(--on-red)}
+.pick button[aria-pressed="true"]::before{content:"✕ "}
+.add-row{display:flex;gap:8px}
+.add-row input{flex:1;min-width:0}
+.cards{display:flex;flex-wrap:wrap;gap:8px}
+.rcard{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:var(--on-red);font-weight:700;font-size:14px;padding:5px 10px 5px 8px;border-radius:4px;box-shadow:0 2px 0 rgba(0,0,0,.16);transform:rotate(-2deg);max-width:100%;overflow-wrap:anywhere}
+.rcard:nth-child(even){transform:rotate(1.5deg)}
+.rcard::before{content:"";width:8px;height:12px;border:1.5px solid rgba(255,255,255,.85);border-radius:2px;flex:none}
+.no-veto{color:var(--muted);font-size:14px;font-style:italic}
+
+/* elenco */
+.list{display:flex;flex-direction:column;gap:10px}
+.player{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.player.me{border-color:var(--pitch);box-shadow:inset 4px 0 0 var(--pitch)}
+.p-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.p-name{font-weight:700;font-size:17px;overflow-wrap:anywhere}
+.tag{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.tag.size{font-family:var(--display);font-size:15px;color:var(--ink);border-color:var(--ink)}
+.tag.you{background:var(--pitch);color:var(--on-pitch);border-color:var(--pitch)}
+.tag.warn{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
+.p-team{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.p-veto{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.p-veto .lead{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.08em}
+.p-wish{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+
+/* sorteio */
+.reveal{background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:20px 16px;display:flex;flex-direction:column;gap:14px;text-align:center;align-items:center}
+.ball{font-family:var(--display);font-weight:900;font-size:72px;line-height:1;color:var(--gold)}
+.jersey{width:100%;background:repeating-linear-gradient(90deg,var(--pitch) 0 24px,var(--pitch-2) 24px 48px);color:var(--on-pitch);border-radius:26px 26px 12px 12px;padding:24px 14px 18px}
+.jersey .nm{font-family:var(--display);font-weight:900;font-size:clamp(34px,11vw,52px);line-height:.95;text-transform:uppercase;overflow-wrap:anywhere;text-wrap:balance}
+.jersey .sz{display:inline-block;margin-top:12px;border:2px solid var(--on-pitch);border-radius:5px;padding:2px 12px;font-family:var(--display);font-weight:800;font-size:22px}
+.jersey .team{margin-top:8px;font-size:15px;opacity:.92}
+.veto-big{width:100%;background:var(--red-soft);border:2px solid var(--red);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.veto-big .lbl{font-family:var(--display);font-weight:900;font-size:24px;color:var(--red);text-transform:uppercase;line-height:1}
+.veto-big .cards{justify-content:center}
+.veto-big .rcard{font-size:17px;padding:8px 12px 8px 10px}
+.check{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.check li{display:flex;gap:10px;align-items:flex-start}
+.check .dot{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--surface-2);border:1.5px solid var(--line);color:var(--muted)}
+.check .done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
+
+/* organizador */
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat div{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-weight:900;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.member{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.member:first-child{border-top:0;padding-top:0}
+.member .who{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.temp{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;font-weight:700;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;user-select:all;-webkit-user-select:all;text-align:center}
+
+/* abas */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.tabbar .in{max-width:560px;margin:0 auto;display:flex}
+.tabbar button{flex:1;min-height:var(--tabbar);border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:700;color:var(--muted);position:relative}
+.tabbar svg{width:24px;height:24px}
+.tabbar button[aria-current="page"]{color:var(--pitch)}
+@media (prefers-color-scheme: dark){.tabbar button[aria-current="page"]{color:var(--gold)}}
+.tabbar .badge{position:absolute;top:8px;left:calc(50% + 8px);width:9px;height:9px;border-radius:50%;background:var(--gold)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tabbar) + 14px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:10px;font-weight:600;font-size:15px;z-index:20;width:max-content;max-width:calc(100% - 32px);text-align:center}
+.offline{background:var(--warn-soft);color:var(--ink);font-size:14px;text-align:center;padding:6px 16px;border-bottom:1px solid var(--warn)}
+.skel{height:84px;border-radius:var(--r);background:linear-gradient(90deg,var(--surface) 0%,var(--surface-2) 50%,var(--surface) 100%);background-size:200% 100%;animation:sh 1.2s infinite linear;border:1px solid var(--line)}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ACESSO -->
+<div id="screen-auth" hidden>
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">Troca de camisas · Natal 2026</div>
+    <h1>Amigo Oculto <span>Pgzetes</span></h1>
+  </div></header>
+  <main class="wrap noTabs">
+    <div class="view">
+      <div class="seg" role="tablist">
+        <button type="button" role="tab" id="tab-login" aria-selected="true">Entrar</button>
+        <button type="button" role="tab" id="tab-reg" aria-selected="false">Criar conta</button>
+      </div>
+      <form class="panel" id="f-login" novalidate>
+        <label class="field"><span>Usuário</span><input type="text" id="l-user" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next"></label>
+        <label class="field"><span>Senha</span><div class="pw"><input type="password" id="l-pass" autocomplete="current-password" enterkeyhint="go"><button type="button" data-eye="l-pass">Ver</button></div></label>
+        <div class="err" id="l-err" role="alert"></div>
+        <button class="btn block" type="submit" id="l-btn">Entrar</button>
+        <p class="sub" style="margin:0">Esqueceu a senha? Peça ao organizador uma senha temporária.</p>
+      </form>
+      <form class="panel" id="f-reg" novalidate hidden>
+        <label class="field"><span>Código do grupo <small>· o organizador manda no grupo</small></span><input type="text" id="r-code" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next"></label>
+        <label class="field"><span>Seu nome ou apelido</span><input type="text" id="r-name" maxlength="40" autocomplete="nickname" enterkeyhint="next"></label>
+        <label class="field"><span>Usuário <small>· para entrar depois</small></span><input type="text" id="r-user" maxlength="20" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="ex.: joaopedro"></label>
+        <label class="field"><span>Senha <small>· mínimo 6 caracteres</small></span><div class="pw"><input type="password" id="r-pass" autocomplete="new-password" enterkeyhint="go"><button type="button" data-eye="r-pass">Ver</button></div></label>
+        <div class="err" id="r-err" role="alert"></div>
+        <button class="btn block" type="submit" id="r-btn">Criar conta</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<!-- APP -->
+<div id="screen-app" hidden>
+  <header class="top">
+    <div class="wrap">
+      <div class="top-row">
+        <div class="brand">Amigo Oculto <span>Pgzetes</span></div>
+        <button type="button" class="icon-btn" id="refresh" aria-label="Atualizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+      </div>
+      <div class="chips"><span class="chip">Valor: <b id="ev-valor">a definir</b></span><span class="chip">Troca: <b id="ev-data">a definir</b></span></div>
+    </div>
+  </header>
+  <div class="offline" id="offline" hidden>Sem conexão. Mostrando os últimos dados carregados.</div>
+  <main class="wrap">
+    <section class="view" id="v-sorteio"></section>
+    <section class="view" id="v-elenco" hidden></section>
+    <section class="view" id="v-ficha" hidden></section>
+    <section class="view" id="v-org" hidden></section>
+    <section class="view" id="v-pass" hidden>
+      <h2>Crie uma senha nova</h2>
+      <form class="panel" id="f-pass" novalidate>
+        <p style="margin:0">Você entrou com uma senha temporária. Escolha uma senha sua para continuar.</p>
+        <label class="field"><span>Nova senha</span><div class="pw"><input type="password" id="p-new" autocomplete="new-password" enterkeyhint="done"><button type="button" data-eye="p-new">Ver</button></div></label>
+        <div class="err" id="p-err" role="alert"></div>
+        <button class="btn block" type="submit" id="p-btn">Salvar senha</button>
+      </form>
+    </section>
+  </main>
+  <nav class="tabbar" id="tabbar" aria-label="Seções">
+    <div class="in">
+      <button type="button" data-tab="sorteio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18"/><path d="M12 8c-2-4-6-4-6-1.5S9 8 12 8c3 0 6-.5 6-1.5S14 4 12 8z"/></svg>Sorteio</button>
+      <button type="button" data-tab="elenco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2c2.9.3 5 2.7 5 5.8"/></svg>Elenco</button>
+      <button type="button" data-tab="ficha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 5.5 2.5 10l3 1.2V21h13v-9.8l3-1.2L20 5.5 16 3c-.6 1.6-2.2 2.6-4 2.6S8.6 4.6 8 3z"/></svg>Minha ficha</button>
+      <button type="button" data-tab="org" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Organizar</button>
+    </div>
+  </nav>
+</div>
+
+<div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, props = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else if (v !== undefined && v !== null && v !== false) n.setAttribute(k, v === true ? "" : v);
+    }
+    for (const k of kids.flat()) if (k != null && k !== false) n.append(k);
+    return n;
+  };
+  const SIZES = ["PP", "P", "M", "G", "GG", "XGG", "Infantil"];
+  const POPULAR = ["Cruzeiro", "Atlético-MG", "Flamengo", "Corinthians", "Palmeiras", "São Paulo", "Vasco", "Fluminense", "Botafogo", "Grêmio", "Internacional", "Santos", "Bahia", "América-MG", "Seleção Brasileira", "Argentina"];
+
+  let toastTimer;
+  const toast = (msg) => { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 3200); };
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-eye]"); if (!b) return;
+    const i = document.getElementById(b.dataset.eye); const show = i.type === "password";
+    i.type = show ? "text" : "password"; b.textContent = show ? "Ocultar" : "Ver";
+  });
+
+  // ---------- armazenamento local: sessão e chave privada ficam só neste aparelho ----------
+  const mem = {};
+  const ls = {
+    get: (k) => { try { return localStorage.getItem(k); } catch { return mem[k] ?? null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch { mem[k] = v; } },
+    del: (k) => { try { localStorage.removeItem(k); } catch { delete mem[k]; } },
+  };
+  let token = ls.get("pgz_token"), username = ls.get("pgz_user");
+  const privName = () => "pgz_priv_" + username;
+
+  // ---------- criptografia (tudo assíncrono: não trava a tela) ----------
+  const ALG = { name: "RSA-OAEP", hash: "SHA-256" };
+  const PBKDF2_IT = 150000;
+  const te = new TextEncoder(), td = new TextDecoder();
+  const b64 = (buf) => { let s = ""; const a = new Uint8Array(buf); for (let i = 0; i < a.length; i++) s += String.fromCharCode(a[i]); return btoa(s); };
+  const unb64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  const hasCrypto = !!(window.crypto && crypto.subtle);
+  async function pwKey(password, salt, it) {
+    const base = await crypto.subtle.importKey("raw", te.encode(password), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: it, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  }
+  async function lockPriv(privJwk, password) {
+    const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    const k = await pwKey(password, salt, PBKDF2_IT);
+    const data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, k, te.encode(JSON.stringify(privJwk)));
+    return { salt: b64(salt), iv: b64(iv), data: b64(data), it: String(PBKDF2_IT) };
+  }
+  async function unlockPriv(e, password) {
+    const k = await pwKey(password, unb64(e.salt), Number(e.it) || PBKDF2_IT);
+    return JSON.parse(td.decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(e.iv) }, k, unb64(e.data))));
+  }
+  async function newKeys(password) {
+    const kp = await crypto.subtle.generateKey({ ...ALG, modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]) }, true, ["encrypt", "decrypt"]);
+    const pub = await crypto.subtle.exportKey("jwk", kp.publicKey);
+    const priv = await crypto.subtle.exportKey("jwk", kp.privateKey);
+    return { pub, priv, encPriv: await lockPriv(priv, password) };
+  }
+  async function decryptMine(cipher) {
+    const jwk = JSON.parse(ls.get(privName()) || "null");
+    if (!jwk) throw new Error("nokey");
+    const k = await crypto.subtle.importKey("jwk", jwk, ALG, false, ["decrypt"]);
+    return td.decode(await crypto.subtle.decrypt({ name: "RSA-OAEP" }, k, unb64(cipher)));
+  }
+
+  // ---------- API com tempo limite (nunca fica pendurada) ----------
+  async function api(path, body, timeoutMs = 20000) {
+    if (!navigator.onLine) throw new Error("Sem conexão. Confira a internet e tente de novo.");
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), timeoutMs);
+    let res;
+    try {
+      res = await fetch("/api/" + path, {
+        method: body === undefined ? "GET" : "POST", signal: ctrl.signal, cache: "no-store",
+        headers: { "content-type": "application/json", ...(token ? { authorization: "Bearer " + token } : {}) },
+        body: body === undefined ? undefined : JSON.stringify(body),
+      });
+    } catch (e) {
+      throw new Error(e.name === "AbortError" ? "A conexão está lenta. Tente de novo." : "Sem conexão com o servidor. Tente de novo.");
+    } finally { clearTimeout(t); }
+    let data = {}; try { data = await res.json(); } catch {}
+    if (res.status === 401 && token && !["login", "password"].includes(path)) { logout(true); throw new Error("Sua sessão expirou. Entre de novo."); }
+    if (!res.ok) throw new Error(data.error || "Não deu certo agora. Tente de novo.");
+    return data;
+  }
+  // trava um botão enquanto a ação roda, com texto de progresso
+  async function withBtn(btn, label, fn) {
+    if (!btn || btn.disabled) return;
+    const old = btn.textContent; btn.disabled = true; btn.textContent = label;
+    try { return await fn(); } finally { if (btn.isConnected) { btn.disabled = false; btn.textContent = old; } }
+  }
+
+  // ---------- estado ----------
+  let state = null, lastJson = "", loading = false;
+  let tab = ls.get("pgz_tab") || "sorteio";
+  let editing = false, draft = null;
+  let myTarget = null, myRound = null, decryptErr = null, revealed = false;
+  let confirmDraw = false, confirmReopen = false, memberAction = null, tempShown = null;
+  let tempPw = null;
+
+  function setSession(t, u) { token = t; username = u; ls.set("pgz_token", t); ls.set("pgz_user", u); }
+  function logout(silent) {
+    if (username) ls.del(privName());
+    ["pgz_token", "pgz_user"].forEach(ls.del);
+    token = username = state = null; lastJson = ""; myTarget = myRound = null; revealed = false; editing = false; draft = null;
+    showAuth(); if (!silent) toast("Você saiu");
+  }
+
+  // ---------- telas ----------
+  function showAuth() { $("#screen-app").hidden = true; $("#screen-auth").hidden = false; }
+  function setAuthTab(reg) {
+    $("#tab-login").setAttribute("aria-selected", String(!reg)); $("#tab-reg").setAttribute("aria-selected", String(reg));
+    $("#f-login").hidden = reg; $("#f-reg").hidden = !reg;
+  }
+  $("#tab-login").addEventListener("click", () => setAuthTab(false));
+  $("#tab-reg").addEventListener("click", () => setAuthTab(true));
+  $("#l-user").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("#l-pass").focus(); } });
+
+  function go(t) {
+    tab = t; ls.set("pgz_tab", t);
+    document.querySelectorAll("[data-tab]").forEach((b) => b.dataset.tab === t ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+    ["sorteio", "elenco", "ficha", "org"].forEach((v) => ($("#v-" + v).hidden = v !== t));
+    window.scrollTo(0, 0);
+    renderTab();
+  }
+  document.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => go(b.dataset.tab)));
+
+  // ---------- entrar ----------
+  $("#f-login").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const u = $("#l-user").value.trim().toLowerCase(), p = $("#l-pass").value, err = $("#l-err");
+    err.textContent = "";
+    if (!u || !p) { err.textContent = "Preencha usuário e senha."; return; }
+    withBtn($("#l-btn"), "Entrando…", async () => {
+      try {
+        const r = await api("login", { username: u, password: p });
+        setSession(r.token, u);
+        if (r.encPriv) {
+          try { ls.set(privName(), JSON.stringify(await unlockPriv(r.encPriv, p))); }
+          catch { toast("Não deu pra abrir sua chave. Peça ao organizador para resetar sua senha."); }
+        } else {
+          const k = await newKeys(p);
+          await api("keys", { pubKey: k.pub, encPriv: k.encPriv });
+          ls.set(privName(), JSON.stringify(k.priv));
+        }
+        if (r.mustChange) tempPw = p;
+        $("#l-pass").value = "";
+        await enterApp();
+      } catch (er) { err.textContent = er.message; }
+    });
+  });
+
+  // ---------- criar conta ----------
+  $("#f-reg").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const code = $("#r-code").value.trim(), name = $("#r-name").value.trim(), u = $("#r-user").value.trim().toLowerCase(), p = $("#r-pass").value, err = $("#r-err");
+    err.textContent = "";
+    if (!code || !name || !u || !p) { err.textContent = "Preencha todos os campos."; return; }
+    if (!/^[a-z0-9._-]{3,20}$/.test(u)) { err.textContent = "Usuário: de 3 a 20 caracteres, só letras minúsculas, números, ponto, hífen ou _ (sem espaço nem acento)."; return; }
+    if (p.length < 6) { err.textContent = "A senha precisa ter pelo menos 6 caracteres."; return; }
+    if (!hasCrypto) { err.textContent = "Este navegador é antigo demais. Abra o link no Chrome ou Safari atualizado."; return; }
+    withBtn($("#r-btn"), "Criando sua conta…", async () => {
+      try {
+        const k = await newKeys(p);
+        const r = await api("register", { groupCode: code, name, username: u, password: p, pubKey: k.pub, encPriv: k.encPriv });
+        setSession(r.token, u); ls.set(privName(), JSON.stringify(k.priv));
+        $("#r-pass").value = ""; tab = "ficha";
+        await enterApp();
+        toast("Conta criada! Agora preencha sua ficha.");
+      } catch (er) { err.textContent = er.message; }
+    });
+  });
+
+  // ---------- troca obrigatória de senha ----------
+  $("#f-pass").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const p = $("#p-new").value, err = $("#p-err"); err.textContent = "";
+    if (p.length < 6) { err.textContent = "A senha precisa ter pelo menos 6 caracteres."; return; }
+    if (!tempPw) { err.textContent = "Saia e entre de novo com a senha temporária."; return; }
+    withBtn($("#p-btn"), "Salvando…", async () => {
+      try {
+        const priv = JSON.parse(ls.get(privName()));
+        const r = await api("password", { oldPassword: tempPw, newPassword: p, encPriv: await lockPriv(priv, p) });
+        setSession(r.token, username); tempPw = null; $("#p-new").value = "";
+        toast("Senha nova salva"); await load(true);
+      } catch (er) { err.textContent = er.message; }
+    });
+  });
+
+  // ---------- carregar ----------
+  async function enterApp() {
+    $("#screen-auth").hidden = true; $("#screen-app").hidden = false;
+    $("#v-" + (["sorteio", "elenco", "ficha", "org"].includes(tab) ? tab : "sorteio")).replaceChildren(el("div", { class: "skel" }), el("div", { class: "skel" }));
+    await load(true);
+  }
+  async function load(force) {
+    if (!token || loading) return;
+    loading = true; $("#refresh").classList.add("spin");
+    try {
+      const s = await api("state");
+      $("#offline").hidden = true;
+      const j = JSON.stringify(s);
+      if (!force && j === lastJson) return;
+      lastJson = j; state = s;
+      await decryptIfNeeded();
+      renderShell();
+    } catch (e) {
+      if (!token) return;
+      if (!state) { $("#v-" + tab).replaceChildren(el("div", { class: "notice", text: e.message }), el("button", { class: "btn block", type: "button", text: "Tentar de novo", onclick: () => load(true) })); }
+      else if (!navigator.onLine) $("#offline").hidden = false;
+      else if (force) toast(e.message);
+    } finally { loading = false; $("#refresh").classList.remove("spin"); }
+  }
+  $("#refresh").addEventListener("click", () => load(true));
+  window.addEventListener("online", () => { $("#offline").hidden = true; load(false); });
+  window.addEventListener("offline", () => { if (state) $("#offline").hidden = false; });
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") load(false); });
+  setInterval(() => { if (document.visibilityState === "visible" && !editing) load(false); }, 30000);
+
+  function renderShell() {
+    const c = state.config || {};
+    $("#ev-valor").textContent = c.valor || "a definir";
+    $("#ev-data").textContent = c.data || "a definir";
+    const mustChange = state.me.mustChange;
+    $("#tabbar").hidden = mustChange; $("#v-pass").hidden = !mustChange;
+    if (mustChange) { ["sorteio", "elenco", "ficha", "org"].forEach((v) => ($("#v-" + v).hidden = true)); return; }
+    const orgBtn = document.querySelector('[data-tab="org"]'); orgBtn.hidden = !state.isAdmin;
+    if (tab === "org" && !state.isAdmin) tab = "sorteio";
+    if (!state.me.size && !editing) { editing = true; draft = null; }
+    // ponto dourado na aba do sorteio quando houver resultado ainda não visto
+    const sb = document.querySelector('[data-tab="sorteio"]'); sb.querySelector(".badge")?.remove();
+    if (state.draw.status === "drawn" && state.draw.mine && !revealed && tab !== "sorteio") sb.append(el("span", { class: "badge", "aria-label": "Resultado disponível" }));
+    document.querySelectorAll("[data-tab]").forEach((b) => b.dataset.tab === tab ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+    ["sorteio", "elenco", "ficha", "org"].forEach((v) => ($("#v-" + v).hidden = v !== tab));
+    renderTab();
+  }
+  function renderTab() {
+    if (!state || state.me.mustChange) return;
+    if (tab === "sorteio") renderSorteio();
+    else if (tab === "elenco") renderElenco();
+    else if (tab === "ficha") renderFicha();
+    else if (tab === "org") renderOrg();
+    if (tab === "sorteio") document.querySelector('[data-tab="sorteio"] .badge')?.remove();
+  }
+
+  // ---------- peças comuns ----------
+  function vetoCards(list) {
+    if (!list || !list.length) return el("span", { class: "no-veto", text: "Aceita qualquer camisa" });
+    return el("div", { class: "cards" }, list.map((v) => el("span", { class: "rcard", text: v })));
+  }
+  function playerCard(s) {
+    const d = state.draw, isMe = s.username === state.me.username;
+    const out = d.status === "drawn" && !(d.participants || []).includes(s.username);
+    return el("article", { class: "player" + (isMe ? " me" : "") },
+      el("div", { class: "p-top" }, el("span", { class: "p-name", text: s.name || s.username }),
+        s.size ? el("span", { class: "tag size", text: s.size }) : el("span", { class: "tag warn", text: "Sem tamanho" }),
+        isMe && el("span", { class: "tag you", text: "Você" }),
+        out && el("span", { class: "tag warn", text: "Fora do sorteio" })),
+      el("div", { class: "p-team", text: s.team ? "Torce pro " + s.team : "Time do coração não informado" }),
+      el("div", { class: "p-veto" }, s.vetoes?.length ? el("span", { class: "lead", text: "Não aceita" }) : null, vetoCards(s.vetoes)),
+      s.wish && el("div", { class: "p-wish", text: "Curte: " + s.wish }));
+  }
+
+  // ---------- aba Sorteio ----------
+  async function decryptIfNeeded() {
+    const d = state.draw;
+    if (d.status !== "drawn" || !d.mine) { myTarget = null; myRound = null; decryptErr = null; return; }
+    if (myRound === d.round) return;
+    myRound = d.round; myTarget = null; decryptErr = null; revealed = false;
+    try {
+      const msg = JSON.parse(await decryptMine(d.mine));
+      if (msg.r !== d.round) throw new Error("round");
+      myTarget = msg.t;
+    } catch (e) { decryptErr = e.message === "nokey" ? "nokey" : "fail"; }
+  }
+  function renderSorteio() {
+    const v = $("#v-sorteio"), d = state.draw, me = state.me;
+    if (d.status !== "drawn") {
+      const items = [
+        [!!me.size, me.size ? "Sua ficha está completa" : "Complete sua ficha (tamanho e vetos)"],
+        [state.members.length >= 3, state.members.length + " inscritos até agora"],
+        [false, "Aguardando o organizador fazer o sorteio"],
+      ];
+      v.replaceChildren(
+        el("h2", { text: "Sorteio" }),
+        el("div", { class: "panel" },
+          el("h3", { text: "O sorteio ainda não aconteceu" }),
+          el("ul", { class: "check" }, items.map(([ok, txt]) => el("li", { class: ok ? "done" : "" }, el("span", { class: "dot", text: ok ? "✓" : "" }), el("span", { text: txt })))),
+          !me.size && el("button", { class: "btn block", type: "button", text: "Preencher minha ficha", onclick: () => go("ficha") })),
+        el("p", { class: "sub", style: "margin:0", text: "Quando sair, seu amigo oculto aparece aqui. Só você vê quem tirou." }));
+      return;
+    }
+    const head = el("h2", { text: "Seu amigo oculto" });
+    if (!d.mine) { v.replaceChildren(head, el("div", { class: "notice", text: "Você ficou fora deste sorteio (chegou depois ou trocou de senha). Avise o organizador para refazer." })); return; }
+    if (decryptErr === "nokey") { v.replaceChildren(head, el("div", { class: "notice", text: "Para abrir seu resultado neste celular, saia e entre de novo com sua senha." }), el("button", { class: "btn block btn-ghost", type: "button", text: "Sair e entrar de novo", onclick: () => logout() })); return; }
+    if (decryptErr) { v.replaceChildren(head, el("div", { class: "notice", text: "Não deu pra abrir seu resultado. Avise o organizador para refazer o sorteio." })); return; }
+    if (!revealed) {
+      v.replaceChildren(head, el("div", { class: "reveal" },
+        el("div", { class: "ball", "aria-hidden": "true", text: "?" }),
+        el("div", { class: "sub", text: "Só você vê quem tirou. Confere se ninguém está espiando a tela." }),
+        el("button", { class: "btn btn-gold block", type: "button", text: "Revelar meu amigo oculto", onclick: () => { revealed = true; renderSorteio(); } })));
+      return;
+    }
+    const t = state.members.find((m) => m.username === myTarget);
+    if (!t) { v.replaceChildren(head, el("div", { class: "notice", text: "A pessoa que você tirou saiu do grupo. Avise o organizador para refazer o sorteio." })); return; }
+    v.replaceChildren(head, el("div", { class: "reveal" },
+      el("div", { class: "sub", text: "Você tirou" }),
+      el("div", { class: "jersey" },
+        el("div", { class: "nm", text: t.name }),
+        el("div", { class: "sz", text: "Tamanho " + (t.size || "?") }),
+        el("div", { class: "team", text: t.team ? "Torce pro " + t.team : "Não disse o time do coração" })),
+      el("div", { class: "veto-big" },
+        el("div", { class: "lbl", text: t.vetoes?.length ? "Não dê camisa de" : "Sem vetos" }),
+        t.vetoes?.length ? vetoCards(t.vetoes) : el("span", { class: "sub", text: "Aceita qualquer camisa." })),
+      t.wish && el("div", { style: "overflow-wrap:anywhere" }, el("strong", { text: "Curte: " }), document.createTextNode(t.wish)),
+      el("button", { class: "btn btn-ghost block", type: "button", text: "Esconder", onclick: () => { revealed = false; renderSorteio(); } })));
+  }
+
+  // ---------- aba Elenco ----------
+  function renderElenco() {
+    const v = $("#v-elenco"), ms = state.members;
+    const me = ms.find((m) => m.username === state.me.username);
+    const others = ms.filter((m) => m !== me).sort((a, b) => (a.name || "").localeCompare(b.name || "", "pt-BR"));
+    v.replaceChildren(
+      el("div", {}, el("h2", { text: "Elenco · " + ms.length }), el("p", { class: "sub", style: "margin:6px 0 0", text: "Os vetos de cada um ficam visíveis pra todo mundo." })),
+      el("div", { class: "list" }, me ? playerCard(me) : null, others.map(playerCard)));
+  }
+
+  // ---------- aba Minha ficha ----------
+  function renderFicha() {
+    const v = $("#v-ficha"), me = state.me;
+    if (editing) { if (!v.querySelector("#f-ficha")) v.replaceChildren(buildForm(me)); return; }
+    let pwOpen = false;
+    const pwBox = el("div", { hidden: true });
+    v.replaceChildren(
+      el("h2", { text: "Minha ficha" }),
+      playerCard(me),
+      el("button", { class: "btn block", type: "button", text: "Editar minha ficha", onclick: () => { editing = true; draft = null; renderFicha(); } }),
+      el("div", { class: "panel" },
+        el("div", { class: "p-top", style: "justify-content:space-between" }, el("span", { class: "sub", text: "Conectado como @" + me.username })),
+        el("div", { class: "row" },
+          el("button", { class: "btn btn-ghost btn-sm", type: "button", text: "Trocar senha", onclick: () => { pwOpen = !pwOpen; pwBox.hidden = !pwOpen; if (pwOpen) pwBox.replaceChildren(buildPwForm()); } }),
+          el("button", { class: "btn btn-ghost btn-sm", type: "button", text: "Sair", onclick: () => logout() })),
+        pwBox));
+  }
+  function buildPwForm() {
+    const oldI = el("input", { type: "password", id: "cp-old", autocomplete: "current-password" });
+    const newI = el("input", { type: "password", id: "cp-new", autocomplete: "new-password" });
+    const err = el("div", { class: "err", role: "alert" });
+    const btn = el("button", { class: "btn block", type: "submit", text: "Salvar nova senha" });
+    const f = el("form", { novalidate: true },
+      el("label", { class: "field" }, el("span", { text: "Senha atual" }), oldI),
+      el("label", { class: "field" }, el("span", { text: "Nova senha" }), newI), err, btn);
+    f.addEventListener("submit", (e) => {
+      e.preventDefault(); err.textContent = "";
+      if (newI.value.length < 6) { err.textContent = "A nova senha precisa ter pelo menos 6 caracteres."; return; }
+      withBtn(btn, "Salvando…", async () => {
+        try {
+          const priv = JSON.parse(ls.get(privName()) || "null");
+          if (!priv) throw new Error("Saia e entre de novo antes de trocar a senha.");
+          const r = await api("password", { oldPassword: oldI.value, newPassword: newI.value, encPriv: await lockPriv(priv, newI.value) });
+          setSession(r.token, username); toast("Senha trocada"); renderFicha();
+        } catch (er) { err.textContent = er.message; }
+      });
+    });
+    return f;
+  }
+
+  function buildForm(me) {
+    draft = draft || { name: me.name || "", team: me.team || "", size: me.size || "", vetoes: (me.vetoes || []).slice(), wish: me.wish || "" };
+    const err = el("div", { class: "err", role: "alert" });
+    const nameI = el("input", { type: "text", id: "f-name", maxlength: "40", value: draft.name, enterkeyhint: "next", autocomplete: "nickname" });
+    const teamI = el("input", { type: "text", id: "f-team", maxlength: "40", value: draft.team, placeholder: "Ex.: Atlético-MG", enterkeyhint: "done" });
+    const wishI = el("textarea", { id: "f-wish", maxlength: "240", placeholder: "Ex.: curto camisa retrô dos anos 90 e time europeu" }); wishI.value = draft.wish;
+    nameI.addEventListener("input", () => (draft.name = nameI.value));
+    teamI.addEventListener("input", () => (draft.team = teamI.value));
+    wishI.addEventListener("input", () => (draft.wish = wishI.value));
+
+    const sizeBox = el("div", { class: "sizes", role: "group", "aria-label": "Tamanho da camisa" });
+    const drawSizes = () => sizeBox.replaceChildren(...SIZES.map((s) => el("button", { type: "button", class: s === "Infantil" ? "wide" : "", "aria-pressed": String(draft.size === s), text: s, onclick: () => { draft.size = s; drawSizes(); } })));
+    drawSizes();
+
+    const has = (t) => draft.vetoes.some((x) => x.toLowerCase() === t.toLowerCase());
+    const pick = el("div", { class: "pick" });
+    const extra = el("div", { class: "cards" });
+    const drawVetos = () => {
+      pick.replaceChildren(...POPULAR.map((t) => el("button", { type: "button", "aria-pressed": String(has(t)), text: t, onclick: () => { draft.vetoes = has(t) ? draft.vetoes.filter((x) => x.toLowerCase() !== t.toLowerCase()) : [...draft.vetoes, t].slice(0, 20); drawVetos(); } })));
+      const custom = draft.vetoes.filter((x) => !POPULAR.some((p) => p.toLowerCase() === x.toLowerCase()));
+      extra.replaceChildren(...custom.map((x) => el("button", { type: "button", class: "rcard", style: "border:0;cursor:pointer", "aria-label": "Tirar veto " + x, text: x + "  ✕", onclick: () => { draft.vetoes = draft.vetoes.filter((y) => y !== x); drawVetos(); } })));
+    };
+    drawVetos();
+    const otherI = el("input", { type: "text", id: "f-other", maxlength: "40", placeholder: "Outro time", enterkeyhint: "done", autocomplete: "off" });
+    const addOther = () => {
+      for (const p of otherI.value.split(/[,;]/).map((x) => x.trim()).filter(Boolean)) if (!has(p) && draft.vetoes.length < 20) draft.vetoes.push(p);
+      otherI.value = ""; drawVetos();
+    };
+    otherI.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addOther(); } });
+
+    const saveBtn = el("button", { class: "btn block", type: "submit", text: "Salvar ficha" });
+    const f = el("form", { id: "f-ficha", novalidate: true },
+      el("h2", { text: me.size ? "Editar ficha" : "Complete sua ficha" }),
+      el("div", { class: "panel" },
+        el("label", { class: "field" }, el("span", { text: "Seu nome ou apelido" }), nameI),
+        el("div", { class: "field" }, el("span", { text: "Tamanho da camisa" }), sizeBox)),
+      el("div", { class: "veto-box" },
+        el("div", { class: "lbl", text: "Não aceito camisa de…" }),
+        el("div", { class: "sub", style: "margin-top:-6px", text: "Toque nos times para vetar." }),
+        pick, extra,
+        el("div", { class: "add-row" }, otherI, el("button", { type: "button", class: "btn btn-red btn-sm", text: "Vetar", onclick: addOther }))),
+      el("div", { class: "panel" },
+        el("label", { class: "field" }, el("span", {}, "Time do coração ", el("small", { text: "· opcional" })), teamI),
+        el("label", { class: "field" }, el("span", {}, "Preferências ", el("small", { text: "· opcional" })), wishI)),
+      err,
+      el("div", { class: "row" }, saveBtn,
+        me.size && el("button", { class: "btn btn-ghost", type: "button", text: "Cancelar", onclick: () => { editing = false; draft = null; renderFicha(); window.scrollTo(0, 0); } })));
+    f.addEventListener("submit", (e) => {
+      e.preventDefault(); err.textContent = "";
+      if (otherI.value.trim()) addOther();
+      if (!draft.name.trim()) { err.textContent = "Coloque seu nome ou apelido."; nameI.focus(); return; }
+      if (!draft.size) { err.textContent = "Escolha o tamanho da camisa."; sizeBox.scrollIntoView({ block: "center" }); return; }
+      withBtn(saveBtn, "Salvando…", async () => {
+        try {
+          await api("profile", { name: draft.name.trim(), size: draft.size, team: draft.team.trim(), vetoes: draft.vetoes, wish: draft.wish.trim() });
+          editing = false; draft = null; toast("Ficha salva"); window.scrollTo(0, 0);
+          await load(true);
+        } catch (er) { err.textContent = er.message; }
+      });
+    });
+    return f;
+  }
+
+  // ---------- aba Organizar ----------
+  function renderOrg() {
+    const v = $("#v-org");
+    if (v.contains(document.activeElement) && document.activeElement.tagName === "INPUT") return;
+    const d = state.draw, drawn = d.status === "drawn", ms = state.members;
+    const ready = ms.filter((m) => m.hasKey), noKey = ms.filter((m) => !m.hasKey), noSize = ms.filter((m) => !m.size);
+    const inDraw = new Set(drawn ? d.participants : []);
+    const out = drawn ? ready.filter((m) => !inDraw.has(m.username)) : [];
+    const gone = drawn ? [...inDraw].filter((u) => !ms.some((m) => m.username === u)) : [];
+    const needRedo = out.length || gone.length;
+
+    const warns = [];
+    if (out.length) warns.push(el("div", { class: "notice", text: out.map((m) => m.name).join(", ") + " está fora do sorteio atual. Refaça para incluir." }));
+    if (gone.length) warns.push(el("div", { class: "notice", text: "Alguém que estava no sorteio saiu do grupo. Refaça o sorteio." }));
+    if (noKey.length) warns.push(el("div", { class: "notice", text: noKey.map((m) => m.name).join(", ") + " precisa entrar com a senha temporária antes do sorteio." }));
+    if (noSize.length) warns.push(el("div", { class: "notice info", text: "Sem tamanho na ficha: " + noSize.map((m) => m.name).join(", ") + "." }));
+
+    const drawBtn = el("button", { class: "btn btn-gold block", type: "button" });
+    let drawArea;
+    if (confirmDraw) {
+      drawBtn.textContent = drawn ? "Sim, refazer o sorteio" : "Sim, sortear agora";
+      drawBtn.addEventListener("click", () => withBtn(drawBtn, "Sorteando…", async () => {
+        try { const r = await api("admin/draw", {}, 30000); confirmDraw = false; toast("Sorteio feito com " + r.count + " pessoas!"); await load(true); }
+        catch (e) { toast(e.message); }
+      }));
+      drawArea = el("div", { class: "panel" },
+        el("strong", { text: drawn ? "Refazer apaga o sorteio atual. Todo mundo recebe um nome novo." : "Sortear com " + ready.length + " participantes?" }),
+        el("div", { class: "row" }, drawBtn, el("button", { class: "btn btn-ghost", type: "button", text: "Voltar", onclick: () => { confirmDraw = false; renderOrg(); } })));
+    } else {
+      drawBtn.textContent = drawn ? "Refazer sorteio" : "Fazer o sorteio";
+      drawBtn.disabled = ready.length < 3;
+      drawBtn.addEventListener("click", () => { confirmDraw = true; renderOrg(); });
+      const reopenBtn = drawn && el("button", { class: "btn btn-ghost block", type: "button", text: confirmReopen ? "Toque de novo para desfazer" : "Desfazer sorteio", onclick: async (e) => {
+        if (!confirmReopen) { confirmReopen = true; renderOrg(); return; }
+        withBtn(e.currentTarget, "Desfazendo…", async () => { try { await api("admin/reopen", {}); confirmReopen = false; toast("Sorteio desfeito"); await load(true); } catch (er) { toast(er.message); } });
+      } });
+      drawArea = el("div", { class: "panel" },
+        el("strong", { text: drawn ? "Sorteio feito em " + new Date(d.drawnAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) + (needRedo ? " · precisa refazer" : "") : "Sorteio ainda não feito" }),
+        ready.length < 3 && el("span", { class: "sub", text: "Precisa de pelo menos 3 pessoas com acesso ativo." }),
+        drawBtn, reopenBtn || null);
+    }
+
+    const valorI = el("input", { type: "text", id: "o-valor", maxlength: "40", value: state.config.valor || "", placeholder: "Ex.: até R$ 150" });
+    const dataI = el("input", { type: "text", id: "o-data", maxlength: "40", value: state.config.data || "", placeholder: "Ex.: sáb, 13/12" });
+    const cfgBtn = el("button", { class: "btn btn-sm", type: "button", text: "Salvar valor e data" });
+    cfgBtn.addEventListener("click", () => withBtn(cfgBtn, "Salvando…", async () => {
+      try { await api("admin/config", { valor: valorI.value.trim(), data: dataI.value.trim() }); valorI.blur(); dataI.blur(); toast("Valor e data salvos"); await load(true); } catch (e) { toast(e.message); }
+    }));
+
+    const people = ms.slice().sort((a, b) => (a.name || "").localeCompare(b.name || "", "pt-BR")).map(memberRow);
+
+    v.replaceChildren(
+      el("h2", { text: "Organizar" }),
+      el("div", { class: "notice info", text: "Você também participa. O sorteio é feito no servidor e cada resultado sai trancado com a senha de quem tirou: este app nunca mostra pra você quem tirou quem." }),
+      el("div", { class: "stat" },
+        el("div", {}, el("b", { text: String(ms.length) }), el("span", { text: "inscritos" })),
+        el("div", {}, el("b", { text: String(ms.length - noSize.length) }), el("span", { text: "fichas ok" })),
+        el("div", {}, el("b", { text: drawn ? String(inDraw.size) : "–" }), el("span", { text: "no sorteio" }))),
+      ...warns,
+      drawArea,
+      el("div", { class: "panel" },
+        el("h3", { text: "Valor e data da troca" }),
+        el("label", { class: "field" }, el("span", { text: "Valor combinado" }), valorI),
+        el("label", { class: "field" }, el("span", { text: "Data da troca" }), dataI),
+        cfgBtn),
+      el("div", { class: "panel" }, el("h3", { text: "Participantes" }), el("div", {}, people)));
+  }
+
+  function memberRow(m) {
+    const isMe = m.username === state.me.username;
+    const head = el("div", { class: "who" },
+      el("div", {}, el("strong", { text: m.name }), el("span", { class: "sub", text: "  @" + m.username })),
+      el("div", { class: "p-top" },
+        m.size ? el("span", { class: "tag size", text: m.size }) : el("span", { class: "tag warn", text: "Sem tamanho" }),
+        !m.hasKey && el("span", { class: "tag warn", text: "Aguardando login" }),
+        isMe && el("span", { class: "tag you", text: "Você" })));
+    const row = el("div", { class: "member" }, head);
+    if (isMe) return row;
+    if (tempShown && tempShown.u === m.username) {
+      const copy = el("button", { class: "btn btn-sm", type: "button", text: "Copiar senha" });
+      copy.addEventListener("click", async () => { try { await navigator.clipboard.writeText(tempShown.p); toast("Senha copiada"); } catch { toast("Toque e segure a senha para copiar"); } });
+      row.append(el("span", { class: "sub", text: "Senha temporária de " + m.name + ". Mande só pra ele(a):" }), el("div", { class: "temp", text: tempShown.p }),
+        el("div", { class: "row" }, copy, el("button", { class: "btn btn-ghost btn-sm", type: "button", text: "Fechar", onclick: () => { tempShown = null; renderOrg(); } })));
+      return row;
+    }
+    if (memberAction && memberAction.u === m.username) {
+      const isReset = memberAction.a === "reset";
+      const yes = el("button", { class: "btn btn-sm " + (isReset ? "btn-gold" : "btn-red"), type: "button", text: isReset ? "Gerar senha" : "Remover" });
+      yes.addEventListener("click", () => withBtn(yes, "Aguarde…", async () => {
+        try {
+          if (isReset) { const r = await api("admin/reset", { username: m.username }); tempShown = { u: m.username, p: r.tempPassword }; }
+          else { await api("admin/remove", { username: m.username }); toast(m.name + " foi removido"); }
+          memberAction = null; await load(true);
+        } catch (e) { toast(e.message); }
+      }));
+      row.append(el("span", { class: "sub", text: isReset ? "Gerar senha temporária para " + m.name + "? Se o sorteio já foi feito, será preciso refazer." : "Remover " + m.name + " do grupo?" }),
+        el("div", { class: "row" }, yes, el("button", { class: "btn btn-ghost btn-sm", type: "button", text: "Voltar", onclick: () => { memberAction = null; renderOrg(); } })));
+      return row;
+    }
+    row.append(el("div", { class: "row" },
+      el("button", { class: "btn btn-ghost btn-sm", type: "button", text: "Resetar senha", onclick: () => { memberAction = { u: m.username, a: "reset" }; renderOrg(); } }),
+      el("button", { class: "btn btn-ghost btn-sm", type: "button", text: "Remover", onclick: () => { memberAction = { u: m.username, a: "remove" }; renderOrg(); } })));
+    return row;
+  }
+
+  // ---------- início ----------
+  if (!hasCrypto) {
+    showAuth();
+    $("#l-err").textContent = "Abra este link no Chrome ou Safari atualizado (o site precisa de conexão segura https).";
+  } else if (token && username) enterApp();
+  else showAuth();
+})();
+</script>
+</body>
+</html>

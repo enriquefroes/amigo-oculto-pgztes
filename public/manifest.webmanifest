@@ -1,0 +1,12 @@
+{
+  "name": "Amigo Oculto Pgzetes",
+  "short_name": "Pgzetes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0E5A39",
+  "theme_color": "#0E5A39",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
